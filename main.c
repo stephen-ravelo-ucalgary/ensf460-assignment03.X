@@ -53,9 +53,10 @@
 #include <p24F16KA101.h>
 #include "clkChange.h"
 #include "UART2.h"
-#include "IOs.h"
 
 
+uint16_t PB1_event;
+uint16_t PB2_event;
 uint16_t PB3_event;
 
 /**
@@ -82,12 +83,25 @@ int main(void) {
     IPC2bits.T3IP = 2; //7 is highest and 1 is lowest pri.
     IFS0bits.T3IF = 0;
     IEC0bits.T3IE = 1; //enable timer interrupt
-    PR3 = 15625; // set the count value for 0.5 s (or 500 ms)
+    PR3 = 31250; // set the count value for 0.5 s (or 500 ms)
     TMR3 = 0;
     T3CONbits.TON = 1;
 
     /* Let's set up some I/O */
-    IOinit();
+    TRISBbits.TRISB9 = 0;
+    LATBbits.LATB9 = 1;
+    
+    TRISAbits.TRISA4 = 1;
+    CNPU1bits.CN0PUE = 1;
+    CNEN1bits.CN0IE = 1;
+    
+    TRISBbits.TRISB4 = 1;
+    CNPU1bits.CN1PUE = 1;
+    CNEN1bits.CN1IE = 1;
+    
+    TRISBbits.TRISB7 = 1;
+    CNPU2bits.CN23PUE = 1;
+    CNEN2bits.CN23IE = 1;
     
     /* Let's clear some flags */
     PB3_event = 0;
@@ -98,6 +112,7 @@ int main(void) {
     
     /* Let's set up our UART */    
     InitUART2();
+  
     
     while(1) {
         
@@ -129,5 +144,8 @@ void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void){
     //Don't forget to clear the CN interrupt flag!
     IFS1bits.CNIF = 0;
 
-    PB3_event = 1;
+    if (PORTAbits.RA4 == 0)
+        PB3_event = 1;
+    else
+        PB3_event = 0;
 }
