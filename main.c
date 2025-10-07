@@ -53,10 +53,18 @@
 #include <p24F16KA101.h>
 #include "clkChange.h"
 #include "UART2.h"
+#include "TimeDelay.h"
 #include "IOs.h"
 
 
-uint16_t PB3_event;
+//uint16_t PB1_event;
+//uint16_t PB2_event;
+//uint16_t PB3_event;
+//uint16_t last_PB1_value;
+//uint16_t last_PB2_value;
+//uint16_t last_PB3_value;
+uint8_t event_triggered;
+
 
 /**
  * You might find it useful to add your own #defines to improve readability here
@@ -82,14 +90,16 @@ int main(void) {
     IPC2bits.T3IP = 2; //7 is highest and 1 is lowest pri.
     IFS0bits.T3IF = 0;
     IEC0bits.T3IE = 1; //enable timer interrupt
-    PR3 = 15625; // set the count value for 0.5 s (or 500 ms)
+    PR3 = 15625 * 2; // set the count value for 0.5 s (or 500 ms)
     TMR3 = 0;
-    T3CONbits.TON = 1;
+    T3CONbits.TON = 0;
 
     /* Let's set up some I/O */
     IOinit();
     
     /* Let's clear some flags */
+    PB1_event = 0;
+    PB2_event = 0;
     PB3_event = 0;
     
     IPC4bits.CNIP = 6;
@@ -98,14 +108,53 @@ int main(void) {
     
     /* Let's set up our UART */    
     InitUART2();
+  
     
     while(1) {
         
+//        Idle();
+//        IEC1bits.CNIE = 0;
+//        delay_ms(200);
+//        IEC1bits.CNIE = 1;
+//        if(PB2_event && PB3_event){
+//            Disp2String("PB3 and PB2 pressed\n\r");
+//            PB3_event = 0;
+//            PB2_event = 0;
+//        }
+//        else if (PB1_event) {
+//            Disp2String("PB1 event\n\r");
+//            PB1_event = 0;
+//        }
+//        else if (PB2_event) {
+//            Disp2String("PB2 event\n\r");
+//            PB2_event = 0;
+//        }
+//        else if (PB3_event) {
+//            Disp2String("PB3 event\n\r");
+//            PB3_event = 0;
+//        }
         Idle();
-        
-        if (PB3_event) {
-            Disp2String("PB3 event\n\r");
-            PB3_event = 0;
+//        Disp2String("Exited Idle\n\r");
+        delay_ms(250);
+//        Disp2String("Delay finished\n\r");
+        if(event_triggered == 1) {
+            event_triggered = 0;
+            if(PORTBbits.RB4 == 0 && PORTAbits.RA4 == 0) {
+                Disp2String("PB2 and PB3 event\n\r");
+            }
+            else if (PORTBbits.RB7 == 0) {
+                Disp2String("PB1 event\n\r");
+            }
+            else if (PORTBbits.RB4 == 0) {
+                Disp2String("PB2 event\n\r");
+            }
+            else if (PORTAbits.RA4 == 0) {
+                Disp2String("PB3 event\n\r");
+            }
+            else {
+                continue;
+            }
+            
         }
     }
     
@@ -114,10 +163,10 @@ int main(void) {
 
 
 // Timer 2 interrupt subroutine
-void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void){
-    //Don't forget to clear the timer 2 interrupt flag!
-    IFS0bits.T2IF = 0;
-}
+//void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void){
+//    //Don't forget to clear the timer 2 interrupt flag!
+//    IFS0bits.T2IF = 0;
+//}
 
 void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void){
     //Don't forget to clear the timer 2 interrupt flag!
@@ -128,6 +177,24 @@ void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void){
 void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void){
     //Don't forget to clear the CN interrupt flag!
     IFS1bits.CNIF = 0;
-
-    PB3_event = 1;
+//    if(PORTBbits.RB7 == 1)
+//        PB1_event = 0;
+//        last_PB1_value = 1;
+//    if(PORTBbits.RB4 == 1)
+//        PB2_event = 0;
+//        last_PB2_value = 1;
+//    if(PORTAbits.RA4 == 1)
+//        PB3_event = 0;
+//        last_PB3_value = 1;
+//    
+//    if(PORTBbits.RB7 == 0)
+//        PB1_event = 1;
+//        last_PB1_value = 0;
+//    if(PORTBbits.RB4 == 0)
+//        PB2_event = 1;
+//        last_PB2_value = 0;
+//    if(PORTAbits.RA4 == 0)
+//        PB3_event = 1;
+//        last_PB3_value = 0;
+    event_triggered = 1;
 }
