@@ -5,7 +5,6 @@
 #include "clkChange.h"
 
 void IOinit();
-void IOcheck();
-void check_time_elapsed();
+int IOcheck();
 
 #endif

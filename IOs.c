@@ -1,5 +1,5 @@
 #include "IOs.h"
-#include "TimeDelay.h"
+#include "UART2.h"
 
 uint16_t time_elapsed_ms;
 
@@ -23,71 +23,41 @@ void IOinit() {
     CNEN2bits.CN23IE = 1;  
 }
 
-void IOcheck() 
+int IOcheck()
 {
-    if (time_elapsed_ms % 1000 == 0)
+    if (PORTBbits.RB4 == 0 && PORTAbits.RA4 == 0) 
     {
-        LATAbits.LATA6 = 0;
-    }
-    else if (time_elapsed_ms % 500 == 0)
-    {
-        LATAbits.LATA6 = 1;
-    }
-    
-    if(PORTBbits.RB7 == 0 && PORTBbits.RB4 == 0) 
-    {
-        if (time_elapsed_ms % 2 == 0)
-        {
-            LATBbits.LATB9 = 0;
-        }
-        else if (time_elapsed_ms % 1 == 0)
-        {
-            LATBbits.LATB9 = 1;
-        }
+        Disp2String("PB2 and PB3 event\n\r");
+        while (PORTBbits.RB4 == 0 && PORTAbits.RA4 == 0)
+            _LATB9 = 1;
+        return 1;
     }
     else if (PORTBbits.RB7 == 0) 
     {
-        if (time_elapsed_ms % 500 == 0)
+        Disp2String("PB1 event\n\r");
+        while (PORTBbits.RB7 == 0)
         {
-            LATBbits.LATB9 = 0;
-        }
-        else if (time_elapsed_ms % 250 == 0)
-        {
-            LATBbits.LATB9 = 1;
+            _LATB9 ^= 1;
+            delay_ms(250);
         }
     }
-    else if (PORTBbits.RB4 == 0) {
-        if (time_elapsed_ms % 2000 == 0)
-        {
-            LATBbits.LATB9 = 0;
-        }
-        else if (time_elapsed_ms % 1000 == 0)
-        {
-            LATBbits.LATB9 = 1;
-        }
-    }
-    else if (PORTAbits.RA4 == 0) {
-        if (time_elapsed_ms % 12000 == 0)
-        {
-            LATBbits.LATB9 = 0;
-        }
-        else if (time_elapsed_ms % 6000 == 0)
-        {
-            LATBbits.LATB9 = 1;
-        }
-    }
-    else
+    else if (PORTBbits.RB4 == 0) 
     {
-        LATBbits.LATB9 = 0;
+        Disp2String("PB2 event\n\r");
+        while (PORTBbits.RB4 == 0)
+        {
+            _LATB9 ^= 1;
+            delay_ms(1000);
+        }
     }
-    
-    delay_ms(1);
-    time_elapsed_ms += 1;
-
-    if (time_elapsed_ms >= 12000)
-    {        
-        time_elapsed_ms = 0;
+    else if (PORTAbits.RA4 == 0) 
+    {
+        Disp2String("PB3 event\n\r");
+        while (PORTAbits.RA4 == 0)
+        {
+            _LATB9 ^= 1;
+            delay_ms(3000);
+        }
     }
-    
-    return;
+    return 0;
 }
