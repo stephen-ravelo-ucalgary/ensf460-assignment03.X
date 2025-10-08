@@ -66,7 +66,7 @@ int main(void)
 {
     AD1PCFG = 0xFFFF; /* keep this line as it sets I/O pins that can also be analog to be digital */
     
-    newClk(500);
+    newClk(500); // Set clock frequency to 500kHz
     
     //Timer config
     timerInit();
@@ -106,13 +106,6 @@ void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void)
 {
     IFS0bits.T2IF = 0;
     T2CONbits.TON = 0;
-}
-
-void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void)
-{
-    //Don't forget to clear the timer 2 interrupt flag!
-    IFS0bits.T3IF = 0;
-    _LATB9 ^= 1;
 }
 
 void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void)
