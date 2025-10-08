@@ -6,11 +6,7 @@ uint16_t time_elapsed_ms;
 void IOinit() 
 {
     TRISBbits.TRISB9 = 0;
-    LATBbits.LATB9 = 1;
-    
-//    TRISAbits.TRISA6 = 0;
-//    LATAbits.LATA6 = 1;
-    
+
     TRISAbits.TRISA4 = 1;
     CNPU1bits.CN0PUE = 1;
     CNEN1bits.CN0IE = 1;

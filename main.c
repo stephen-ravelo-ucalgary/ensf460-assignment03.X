@@ -64,13 +64,6 @@ uint16_t CN_event;
 
 int main(void) 
 {
-    
-    /** This is usually where you would add run-once code
-     * e.g., peripheral initialization. For the first labs
-     * you might be fine just having it here. For more complex
-     * projects, you might consider having one or more initialize() functions
-     */
-    
     AD1PCFG = 0xFFFF; /* keep this line as it sets I/O pins that can also be analog to be digital */
     
     newClk(500);
@@ -90,9 +83,7 @@ int main(void)
     
     /* Let's set up our UART */    
     InitUART2();
-    
-    _LATB9 = 0;
-    
+        
     while(1) 
     {
         Idle();
