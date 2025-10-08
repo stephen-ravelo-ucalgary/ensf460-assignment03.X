@@ -56,14 +56,14 @@
 #include "IOs.h"
 #include "timer.h"
 
-uint8_t CN_event;
-uint8_t CN_skip;
+uint16_t CN_event;
 
 /**
  * You might find it useful to add your own #defines to improve readability here
  */
 
-int main(void) {
+int main(void) 
+{
     
     /** This is usually where you would add run-once code
      * e.g., peripheral initialization. For the first labs
@@ -100,7 +100,7 @@ int main(void) {
         if(CN_event == 1) 
         {
             CN_event = 0;
-            CN_skip = IOcheck();
+            IOcheck();
             
             _LATB9 = 0;
         }
@@ -110,31 +110,24 @@ int main(void) {
 }
 
 // Timer 2 interrupt subroutine
-//void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void){
-//    //Don't forget to clear the timer 2 interrupt flag!
-//    IFS0bits.T2IF = 0;
-//}
 
-void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void) {
+void __attribute__((interrupt, no_auto_psv)) _T2Interrupt(void) 
+{
     IFS0bits.T2IF = 0;
     T2CONbits.TON = 0;
 }
 
-void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void){
+void __attribute__((interrupt, no_auto_psv)) _T3Interrupt(void)
+{
     //Don't forget to clear the timer 2 interrupt flag!
     IFS0bits.T3IF = 0;
-//    _LATB9 ^= 1;
+    _LATB9 ^= 1;
 }
 
-void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void){
+void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void)
+{
     //Don't forget to clear the CN interrupt flag!
     IFS1bits.CNIF = 0;
-    
-    if (CN_skip)
-    {
-        CN_skip = 0;
-        return;
-    }
     
     CN_event = 1;
 }

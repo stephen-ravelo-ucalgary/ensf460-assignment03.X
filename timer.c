@@ -24,7 +24,8 @@ void timerInit()
     T3CONbits.TON = 0;
 }
 
-void delay_ms(uint16_t time_ms) {
+void delay_ms(uint16_t time_ms) 
+{
     PR2 = 1 * time_ms;
     TMR2 = 0;
     

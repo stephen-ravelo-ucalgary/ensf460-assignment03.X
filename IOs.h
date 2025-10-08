@@ -5,6 +5,6 @@
 #include "clkChange.h"
 
 void IOinit();
-int IOcheck();
+void IOcheck();
 
 #endif
