@@ -87,7 +87,7 @@ int main(void)
     while(1) 
     {
         Idle();
-        delay_ms(50);
+        delay_ms(200);
         if(CN_event == 1) 
         {
             CN_event = 0;
@@ -112,6 +112,9 @@ void __attribute__((interrupt, no_auto_psv)) _CNInterrupt(void)
 {
     //Don't forget to clear the CN interrupt flag!
     IFS1bits.CNIF = 0;
-    
-    CN_event = 1;
+    if(PORTBbits.RB7 == 1 && PORTBbits.RB4 == 1 && PORTAbits.RA4 == 1){
+        Disp2String("\033[2J\033[HNothing pressed\r");
+    }else{
+        CN_event = 1;
+    }
 }
